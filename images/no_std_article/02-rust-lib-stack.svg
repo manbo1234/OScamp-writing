@@ -1,0 +1,53 @@
+﻿<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #fffdf7; }
+      .title { font: 700 34px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #1f2937; }
+      .subtitle { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #475569; }
+      .layer-title {
+        font: 700 28px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace;
+        fill: #0f172a;
+      }
+      .body { font: 500 17px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #334155; }
+      .caption { font: 700 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #0f172a; }
+      .note {
+        font: 600 22px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace;
+        fill: #0f172a;
+      }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="720"/>
+  <text class="title" x="70" y="76">Rust 的三层库关系，与 `#![no_std]` 真正拿掉的东西</text>
+  <text class="subtitle" x="70" y="108">`no_std` 不是“什么都不能用”，而是不再默认链接依赖操作系统的那一层</text>
+
+  <rect x="170" y="180" width="500" height="360" rx="32" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+
+  <rect x="230" y="230" width="380" height="90" rx="22" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/>
+  <text class="layer-title" x="420" y="285" text-anchor="middle">std</text>
+  <text class="body" x="420" y="310" text-anchor="middle">文件、网络、线程、时间、标准输入输出</text>
+
+  <rect x="230" y="345" width="380" height="90" rx="22" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text class="layer-title" x="420" y="400" text-anchor="middle">alloc</text>
+  <text class="body" x="420" y="425" text-anchor="middle">Vec、String、Box、Arc，需要全局分配器</text>
+
+  <rect x="230" y="460" width="380" height="90" rx="22" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+  <text class="layer-title" x="420" y="515" text-anchor="middle">core</text>
+  <text class="body" x="420" y="540" text-anchor="middle">Option、Result、trait、slice、fmt、原子操作</text>
+
+  <text class="caption" x="420" y="590" text-anchor="middle">依赖方向：`std` → `alloc` → `core`</text>
+
+  <rect x="760" y="210" width="400" height="120" rx="28" fill="#ffffff" stroke="#f97316" stroke-width="3"/>
+  <text class="note" x="960" y="280" text-anchor="middle">#![no_std]</text>
+  <text class="body" x="960" y="315" text-anchor="middle">不链接 `std`，因此不能默认依赖 OS 提供的完整运行环境</text>
+
+  <path d="M 760 270 H 650" stroke="#f97316" stroke-width="4" fill="none"/>
+  <polygon points="650,270 670,258 670,282" fill="#f97316"/>
+
+  <rect x="760" y="370" width="400" height="210" rx="28" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text class="caption" x="960" y="418" text-anchor="middle">这意味着什么</text>
+  <text class="body" x="795" y="458">1. 语言核心能力还在，`core` 仍可用</text>
+  <text class="body" x="795" y="492">2. 想用动态分配，需要你先提供 allocator</text>
+  <text class="body" x="795" y="526">3. `println!`、文件、线程等不再自动存在</text>
+  <text class="body" x="795" y="560">4. 程序开始暴露出“运行时尚未搭好”的现实</text>
+</svg>

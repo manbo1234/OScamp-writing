@@ -1,0 +1,86 @@
+﻿<svg width="1280" height="820" viewBox="0 0 1280 820" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 34px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #475569; }
+      .label { font: 700 20px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #0f172a; }
+      .body { font: 500 16px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #334155; }
+      .mono {
+        font: 700 18px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace;
+        fill: #0f172a;
+      }
+      .cell {
+        font: 500 15px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace;
+        fill: #1f2937;
+      }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="820"/>
+  <text class="title" x="70" y="70">系统调用是用户态进入内核态的“合法入口”</text>
+  <text class="subtitle" x="70" y="104">本质上，它是一套和架构绑定的寄存器协议 + 一条触发特权切换的指令</text>
+
+  <rect x="70" y="145" width="1140" height="280" rx="30" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+
+  <rect x="120" y="205" width="230" height="150" rx="24" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/>
+  <text class="label" x="235" y="252" text-anchor="middle">用户态程序</text>
+  <text class="body" x="235" y="288" text-anchor="middle">想要写终端、分配资源</text>
+  <text class="body" x="235" y="316" text-anchor="middle">或读取文件时，不能直接碰硬件</text>
+
+  <rect x="430" y="205" width="260" height="150" rx="24" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text class="label" x="560" y="252" text-anchor="middle">寄存器准备</text>
+  <text class="body" x="560" y="288" text-anchor="middle">调用号、参数、返回值位置</text>
+  <text class="mono" x="560" y="322" text-anchor="middle">rax / rdi / rsi / rdx ...</text>
+
+  <rect x="770" y="180" width="110" height="200" rx="20" fill="#f97316"/>
+  <text class="label" x="825" y="282" text-anchor="middle" fill="#ffffff">syscall</text>
+  <text class="body" x="825" y="314" text-anchor="middle" fill="#ffffff">切换特权级</text>
+
+  <rect x="960" y="205" width="190" height="150" rx="24" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+  <text class="label" x="1055" y="252" text-anchor="middle">内核入口</text>
+  <text class="body" x="1055" y="288" text-anchor="middle">校验参数，定位对象，</text>
+  <text class="body" x="1055" y="316" text-anchor="middle">执行业务并返回结果</text>
+
+  <path d="M 350 280 H 430" stroke="#64748b" stroke-width="4" fill="none"/>
+  <polygon points="430,280 410,268 410,292" fill="#64748b"/>
+  <path d="M 690 280 H 770" stroke="#64748b" stroke-width="4" fill="none"/>
+  <polygon points="770,280 750,268 750,292" fill="#64748b"/>
+  <path d="M 880 280 H 960" stroke="#64748b" stroke-width="4" fill="none"/>
+  <polygon points="960,280 940,268 940,292" fill="#64748b"/>
+
+  <rect x="70" y="470" width="1140" height="280" rx="30" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text class="label" x="100" y="515">常见架构的 syscall ABI 对比</text>
+
+  <rect x="100" y="545" width="180" height="56" rx="14" fill="#e2e8f0"/>
+  <rect x="280" y="545" width="180" height="56" rx="14" fill="#e2e8f0"/>
+  <rect x="460" y="545" width="180" height="56" rx="14" fill="#e2e8f0"/>
+  <rect x="640" y="545" width="180" height="56" rx="14" fill="#e2e8f0"/>
+  <rect x="820" y="545" width="320" height="56" rx="14" fill="#e2e8f0"/>
+
+  <text class="mono" x="190" y="580" text-anchor="middle">架构</text>
+  <text class="mono" x="370" y="580" text-anchor="middle">触发指令</text>
+  <text class="mono" x="550" y="580" text-anchor="middle">调用号</text>
+  <text class="mono" x="730" y="580" text-anchor="middle">返回值</text>
+  <text class="mono" x="980" y="580" text-anchor="middle">参数寄存器</text>
+
+  <text class="cell" x="190" y="640" text-anchor="middle">x86_64</text>
+  <text class="cell" x="370" y="640" text-anchor="middle">syscall</text>
+  <text class="cell" x="550" y="640" text-anchor="middle">rax</text>
+  <text class="cell" x="730" y="640" text-anchor="middle">rax</text>
+  <text class="cell" x="850" y="640">rdi, rsi, rdx, r10, r8, r9</text>
+
+  <text class="cell" x="190" y="684" text-anchor="middle">aarch64</text>
+  <text class="cell" x="370" y="684" text-anchor="middle">svc #0</text>
+  <text class="cell" x="550" y="684" text-anchor="middle">x8</text>
+  <text class="cell" x="730" y="684" text-anchor="middle">x0</text>
+  <text class="cell" x="902" y="684">x0, x1, x2, x3, x4, x5</text>
+
+  <text class="cell" x="190" y="728" text-anchor="middle">riscv64</text>
+  <text class="cell" x="370" y="728" text-anchor="middle">ecall</text>
+  <text class="cell" x="550" y="728" text-anchor="middle">a7</text>
+  <text class="cell" x="730" y="728" text-anchor="middle">a0</text>
+  <text class="cell" x="902" y="728">a0, a1, a2, a3, a4, a5</text>
+
+  <text class="body" x="100" y="776">重点：系统接口不是抽象概念，而是能落到寄存器、指令和 ABI 的具体约定。</text>
+</svg>

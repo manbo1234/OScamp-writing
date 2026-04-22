@@ -1,0 +1,61 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: 700 34px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #1f497d; }
+      .subtitle { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #4b5563; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 18; ry: 18; }
+      .codebg { fill: #eef4fb; stroke: #9eb6d8; stroke-width: 2; rx: 18; ry: 18; }
+      .body { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #334155; }
+      .mono { font: 500 17px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace; fill: #0f172a; }
+      .small { font: 500 15px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #475569; }
+      .block-a { fill: #dbeafe; stroke: #4f81bd; stroke-width: 2; }
+      .block-b { fill: #fde9d9; stroke: #f79646; stroke-width: 2; stroke-dasharray: 8 6; }
+      .block-c { fill: #e2f0d9; stroke: #9bbb59; stroke-width: 2; }
+      .node { fill: #ffffff; stroke: #f79646; stroke-width: 2; }
+      .arrow { stroke: #f79646; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .link { stroke: #f79646; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .note { font: 700 20px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #9a3412; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#f79646"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <text class="title" x="70" y="68">灵魂拷问: 如果想 free 呢?</text>
+  <text class="subtitle" x="70" y="102">Bump 只往前走，所以被释放的洞会直接丢失</text>
+
+  <rect x="70" y="150" width="520" height="450" class="codebg"/>
+  <text class="note" x="100" y="194">Bump 版本</text>
+  <rect x="110" y="250" width="120" height="84" class="block-a"/>
+  <rect x="240" y="250" width="120" height="84" class="block-b"/>
+  <rect x="370" y="250" width="120" height="84" class="block-c"/>
+  <text class="mono" x="170" y="300" text-anchor="middle">A</text>
+  <text class="mono" x="300" y="300" text-anchor="middle">B</text>
+  <text class="mono" x="430" y="300" text-anchor="middle">C</text>
+  <text class="small" x="170" y="370" text-anchor="middle">分配 A, B, C</text>
+  <text class="small" x="300" y="370" text-anchor="middle">释放 B</text>
+  <text class="small" x="430" y="370" text-anchor="middle">空洞留在中间</text>
+  <path class="arrow" d="M 300 340 V 400"/>
+  <text class="small" x="300" y="395" text-anchor="middle">↑ bump 不知道它空了</text>
+  <text class="body" x="100" y="470">Bump Allocator 不能回头，</text>
+  <text class="body" x="100" y="500">所以中间洞会被浪费掉。</text>
+
+  <rect x="650" y="150" width="560" height="450" class="panel"/>
+  <text class="note" x="680" y="194">Free-List Allocator</text>
+  <text class="body" x="680" y="232">把释放的块串成链表，分配时先查链表。</text>
+  <rect x="705" y="290" width="110" height="68" class="node"/>
+  <rect x="855" y="290" width="110" height="68" class="node"/>
+  <rect x="1005" y="290" width="110" height="68" class="node"/>
+  <text class="mono" x="760" y="332" text-anchor="middle">B</text>
+  <text class="mono" x="910" y="332" text-anchor="middle">D</text>
+  <text class="mono" x="1060" y="332" text-anchor="middle">...</text>
+  <path class="link" d="M 815 324 H 855"/>
+  <path class="link" d="M 965 324 H 1005"/>
+  <text class="small" x="760" y="385" text-anchor="middle">被释放的块</text>
+  <text class="small" x="910" y="385" text-anchor="middle">下一块</text>
+  <text class="small" x="1060" y="385" text-anchor="middle">更多空闲块</text>
+  <text class="body" x="680" y="470">侵入式链表: 元数据直接放在空闲块自己里面。</text>
+  <text class="body" x="680" y="502">这样 alloc() 就能复用中间的洞，而不是一味往前切。</text>
+  <text class="small" x="680" y="560">练习: 02 Bump Allocator, 03 Free-List Allocator</text>
+</svg>

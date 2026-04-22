@@ -1,0 +1,61 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: 700 34px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #1f497d; }
+      .subtitle { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #4b5563; }
+      .codebg { fill: #eef4fb; stroke: #9eb6d8; stroke-width: 2; rx: 18; ry: 18; }
+      .panel { fill: #f8fbff; stroke: #cbd5e1; stroke-width: 2; rx: 18; ry: 18; }
+      .mono { font: 500 17px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace; fill: #0f172a; }
+      .mono-bold { font: 700 18px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace; fill: #0f172a; }
+      .body { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #334155; }
+      .note { font: 700 20px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #9a3412; }
+      .heap { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 16; ry: 16; }
+      .a { fill: #dbeafe; stroke: #4f81bd; stroke-width: 2; }
+      .b { fill: #e2e8f0; stroke: #64748b; stroke-width: 2; }
+      .c { fill: #cfe8cf; stroke: #9bbb59; stroke-width: 2; }
+      .free { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 8 6; }
+      .arrow { stroke: #f79646; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .small { font: 500 15px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #475569; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#f79646"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <text class="title" x="70" y="68">Live Coding: Bump Allocator</text>
+  <text class="subtitle" x="70" y="102">一块连续内存 + 一个偏移量，每次分配都只往前切一块</text>
+
+  <rect x="70" y="140" width="520" height="470" class="codebg"/>
+  <text class="mono" x="100" y="188">const HEAP_SIZE: usize = 128;</text>
+  <text class="mono" x="100" y="220">static mut HEAP: [u8; HEAP_SIZE] = [0; 128];</text>
+  <text class="mono" x="100" y="252">static mut OFFSET: usize = 0;</text>
+  <text class="mono" x="100" y="298">pub unsafe fn alloc(size: usize) -&gt; *mut u8 {</text>
+  <text class="mono" x="120" y="330">if OFFSET + size &gt; HEAP_SIZE {</text>
+  <text class="mono" x="160" y="362">return core::ptr::null_mut();</text>
+  <text class="mono" x="120" y="394">}</text>
+  <text class="mono" x="120" y="426">let ptr = HEAP.as_mut_ptr().add(OFFSET);</text>
+  <text class="mono" x="120" y="458">OFFSET += size;</text>
+  <text class="mono" x="120" y="490">ptr</text>
+  <text class="mono" x="100" y="522">}</text>
+
+  <rect x="650" y="150" width="560" height="170" class="panel"/>
+  <text class="note" x="680" y="194">Bump Allocator</text>
+  <text class="body" x="680" y="230">一个指针，只往前走</text>
+  <text class="body" x="680" y="262">优点: 极快, O(1)</text>
+  <text class="body" x="680" y="294">缺点: 不能释放</text>
+
+  <rect x="650" y="350" width="560" height="260" class="heap"/>
+  <rect x="680" y="410" width="120" height="92" class="a"/>
+  <rect x="800" y="410" width="120" height="92" class="b"/>
+  <rect x="920" y="410" width="120" height="92" class="c"/>
+  <rect x="1040" y="410" width="140" height="92" class="free"/>
+  <text class="mono-bold" x="740" y="466" text-anchor="middle">A</text>
+  <text class="mono-bold" x="860" y="466" text-anchor="middle">B</text>
+  <text class="mono-bold" x="980" y="466" text-anchor="middle">C</text>
+  <text class="mono-bold" x="1110" y="462" text-anchor="middle">空闲</text>
+  <path class="arrow" d="M 980 380 V 398"/>
+  <text class="small" x="980" y="372" text-anchor="middle" fill="#f79646">OFFSET</text>
+  <text class="small" x="950" y="550" text-anchor="middle">HEAP: [██ A ██|██ B ██|██ C ██|........ 空闲 ........]</text>
+  <text class="small" x="980" y="580" text-anchor="middle">↑ OFFSET 只往前走, 从不回头</text>
+</svg>

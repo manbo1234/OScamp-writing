@@ -1,0 +1,68 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: 700 34px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #1f497d; }
+      .subtitle { font: 500 18px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #4b5563; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 18; ry: 18; }
+      .codebg { fill: #eef4fb; stroke: #9eb6d8; stroke-width: 2; rx: 18; ry: 18; }
+      .body { font: 500 17px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #334155; }
+      .mono { font: 500 16px 'JetBrains Mono', 'Cascadia Mono', 'Microsoft YaHei UI', 'Microsoft YaHei', monospace; fill: #0f172a; }
+      .small { font: 500 15px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #475569; }
+      .slot { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .slot-hi { fill: #dbeafe; stroke: #4f81bd; stroke-width: 2; }
+      .slot-empty { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 8 6; }
+      .arrow { stroke: #4f81bd; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .link { stroke: #f79646; stroke-width: 4; fill: none; marker-end: url(#arrow-orange); }
+      .note { font: 700 20px 'Noto Sans SC', 'Microsoft YaHei', sans-serif; fill: #1f497d; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#4f81bd"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#f79646"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <text class="title" x="70" y="68">文件描述符的本质</text>
+  <text class="subtitle" x="70" y="102">`write(1, buf)` 里的 `1` 不是魔法数字，而是内核给用户的凭证</text>
+
+  <rect x="70" y="150" width="560" height="470" class="codebg"/>
+  <text class="note" x="100" y="194">fd_table</text>
+  <rect x="105" y="230" width="500" height="54" class="slot"/>
+  <rect x="105" y="290" width="500" height="54" class="slot-hi"/>
+  <rect x="105" y="350" width="500" height="54" class="slot"/>
+  <rect x="105" y="410" width="500" height="54" class="slot-empty"/>
+  <rect x="105" y="470" width="500" height="54" class="slot"/>
+
+  <text class="mono" x="130" y="264">0</text>
+  <text class="body" x="205" y="264">Some(stdin)</text>
+  <text class="mono" x="130" y="324">1</text>
+  <text class="body" x="205" y="324">Some(stdout)</text>
+  <text class="mono" x="130" y="384">2</text>
+  <text class="body" x="205" y="384">Some(stderr)</text>
+  <text class="mono" x="130" y="444">3</text>
+  <text class="body" x="205" y="444">None</text>
+  <text class="mono" x="130" y="504">4</text>
+  <text class="body" x="205" y="504">Some(log_file)</text>
+  <text class="small" x="385" y="560" text-anchor="middle">索引就是 handle (凭证)</text>
+
+  <rect x="680" y="150" width="530" height="215" class="panel"/>
+  <text class="note" x="710" y="194">设计要点</text>
+  <text class="body" x="710" y="234">Some = 占用, None = 空位</text>
+  <text class="body" x="710" y="266">open() 返回最小可用索引</text>
+  <text class="body" x="710" y="298">close() 置为 None, 空位可复用</text>
+  <text class="body" x="710" y="330">一句话: 数组索引即凭证</text>
+
+  <rect x="680" y="390" width="530" height="230" class="panel"/>
+  <text class="note" x="710" y="434">Live Coding: 传感器管理器</text>
+  <text class="mono" x="710" y="470">struct SensorTable {</text>
+  <text class="mono" x="740" y="498">slots: [Option&lt;&amp;'static str&gt;; 8],</text>
+  <text class="mono" x="710" y="526">}</text>
+  <text class="mono" x="710" y="556">register(&quot;温度&quot;) -&gt; 0</text>
+  <text class="mono" x="710" y="582">unregister(1); register(&quot;气压&quot;) -&gt; 1</text>
+  <path class="link" d="M 610 320 H 680"/>
+  <text class="small" x="645" y="302" text-anchor="middle" fill="#f79646">write(1, ...)</text>
+  <path class="arrow" d="M 610 260 H 680"/>
+  <text class="small" x="645" y="242" text-anchor="middle">stdout 对象</text>
+</svg>
