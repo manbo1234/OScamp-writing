@@ -530,7 +530,7 @@ pub unsafe fn alloc(size: usize) -> *mut u8 {
 }
 ```
 
-![Bump Allocator 的内存切片示意](no_std_article_png/06-bump-allocator.png)
+![Bump Allocator 的内存切片示意](no_std_article_png/06-bump-allocator.png) 
 
 它的优点非常明显：
 
