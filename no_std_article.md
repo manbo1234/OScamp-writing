@@ -53,7 +53,7 @@ println!()
 
 而 `no_std` 的价值，恰恰就在于它逼着你直面这些问题。它会把那层熟悉的封装撕开，让你重新看到程序和操作系统之间真正的边界。
 
-![`println!` 背后的完整调用链](images/no_std_article_png/01-println-call-chain.png)
+![`println!` 背后的完整调用链](no_std_article_png/01-println-call-chain.png)
 
 如果按课件里的实验先跑一遍 `strace ./hello 2>&1 | wc -l`，你会看得更直观一些：在示例里，普通 `println!` 版本会带出 47 次 syscall。其中不只有 `write`，还常常能看到 `mmap`、`mprotect`、`brk`、`read`、`sigaction`、`exit_group` 这类初始化和收尾动作。它们并不是“多余噪声”，而是标准库、运行时和 libc 在悄悄替你铺路。
 
@@ -67,7 +67,7 @@ exit(0)                                   = ?
 
 这里的 `execve` 是加载程序时不可避免的入口；但在程序体内部，真正主动发起的已经只剩 `write + exit`。这才是 `no_std` 最有力量的地方：它不是把程序变简单，而是把程序边界压缩到只剩必要路径。再做一个小实验，把 `rax = 1` 改成 `rax = 0`，`write` 就会变成 `read`，程序不再输出，而是直接卡在等待输入上。syscall 编号只差一个，行为就会完全不同。
 
-![`strace` 对比：47 次 syscall vs 2 次 syscall](images/no_std_article_png/05-strace-compare.png)
+![`strace` 对比：47 次 syscall vs 2 次 syscall](no_std_article_png/05-strace-compare.png)
 
 ---
 
@@ -200,7 +200,7 @@ pub unsafe fn strcmp(mut a: *const u8, mut b: *const u8) -> i32 {
 
 如果沿着课上的 live coding 节奏看，当前阶段常常会先刻意只用 `core`，暂时不接 `alloc`。但这只是教学顺序，不是语言边界。更准确地说，`no_std` 程序可以只用 `core` 起步，也可以在你自己提供分配器之后，把 `alloc` 接回来。
 
-![Rust 三层库关系与 `#![no_std]` 的影响](images/no_std_article_png/02-rust-lib-stack.png)
+![Rust 三层库关系与 `#![no_std]` 的影响](no_std_article_png/02-rust-lib-stack.png)
 
 ---
 
@@ -250,7 +250,7 @@ pub extern "C" fn _start() -> ! {
 
 一个“死循环空程序”在这里反而有教学价值。它几乎没有业务逻辑，所以所有你平时意识不到的运行时骨架都会暴露得很干净。你会更清楚地感觉到：所谓“程序运行”，本来就不是从 `main` 开始的，而是从一整套入口、初始化、异常和退出约定被满足之后才成立。
 
-![从空文件到最小 `no_std` 程序的报错链与责任暴露](images/no_std_article_png/10-no-std-bootstrap.png)
+![从空文件到最小 `no_std` 程序的报错链与责任暴露](no_std_article_png/10-no-std-bootstrap.png)
 
 ### 1. 没有默认的 `main`
 
@@ -332,7 +332,7 @@ sys_write(fd, buf)
 - 用户态和内核态的交互是高度架构相关的
 - “系统接口”并不是一个抽象概念，而是一套可以落到寄存器和指令级别的具体约定
 
-![系统调用作为用户态进入内核态的合法入口](images/no_std_article_png/03-syscall-gate.png)
+![系统调用作为用户态进入内核态的合法入口](no_std_article_png/03-syscall-gate.png)
 
 ---
 
@@ -442,7 +442,7 @@ fn ret_to_result(ret: isize) -> Result<usize, i32> {
 
 这样一来，`syscall` 层和 `Result` 层的分工就清楚了：前者负责正确完成“寄存器协议 + 特权级切换”，后者负责把负值错误码重新解释成“成功/失败”的语言级语义。`syscall3` 只是把寄存器协议包起来，真正的语义还得继续往上层封装。
 
-![syscall 返回值从 `isize` 到 `Result` 的翻译](images/no_std_article_png/13-syscall-result.png)
+![syscall 返回值从 `isize` 到 `Result` 的翻译](no_std_article_png/13-syscall-result.png)
 
 到这里，我们已经开始从“直接和硬件协议打交道”过渡到“自己设计抽象层”。这恰恰就是操作系统实现的常见模式。
 
@@ -478,7 +478,7 @@ unsafe fn syscall3_riscv64(id: usize, a0: usize, a1: usize, a2: usize) -> isize 
 
 这里最值得看的不是语法细节，而是封装差异：`x86_64` 要额外处理 `rcx/r11` clobber；`aarch64` 把调用号放在 `x8`；`riscv64` 则放在 `a7`。所以跨架构适配时，真正会变的不是“`write` 这个概念”，而是 syscall 封装最底下那一小层汇编约定。
 
-![从 `asm!` 到 `syscall3` 的抽象分层](images/no_std_article_png/04-syscall-abstraction.png)
+![从 `asm!` 到 `syscall3` 的抽象分层](no_std_article_png/04-syscall-abstraction.png)
 
 ---
 
@@ -498,7 +498,7 @@ unsafe fn syscall3_riscv64(id: usize, a0: usize, a1: usize, a2: usize) -> isize 
 
 因此，allocator 在这篇文章里的地位并不是“顺手补一个算法题”，而是系统开发思维的一次转折：从前面处理入口和 syscall 这类控制流边界，转到开始处理“长期资源如何被组织和复用”这个问题。程序已经不只是要能跑，还得开始学会管理自己消耗的空间。
 
-![动态容器、`alloc`、`GlobalAlloc` 与底层内存之间的依赖链](images/no_std_article_png/12-alloc-dependency.png)
+![动态容器、`alloc`、`GlobalAlloc` 与底层内存之间的依赖链](no_std_article_png/12-alloc-dependency.png)
 
 ---
 
@@ -530,7 +530,7 @@ pub unsafe fn alloc(size: usize) -> *mut u8 {
 }
 ```
 
-![Bump Allocator 的内存切片示意](images/no_std_article_png/06-bump-allocator.png)
+![Bump Allocator 的内存切片示意](no_std_article_png/06-bump-allocator.png)
 
 它的优点非常明显：
 
@@ -632,7 +632,7 @@ unsafe impl GlobalAlloc for BumpAlloc {
 let aligned = (offset + align - 1) & !(align - 1);
 ```
 
-![内存对齐前后的地址变化](images/no_std_article_png/07-alignment.png)
+![内存对齐前后的地址变化](no_std_article_png/07-alignment.png)
 
 这行代码表面上只是位运算，实际上却标志着系统编程中的一种典型变化：代码不再只满足语言层面的正确性，而要开始满足 ABI 和硬件层面的正确性。比如 `offset = 3`、`align = 4` 时，先算 `3 + (4 - 1) = 6`，再做 `6 & !3`，就会得到 `4`，也就是“向上补到下一个 4 的整数倍”。最小实现只要记住一个原则：先把 `offset` 向上补到 `align` 的整数倍，再把 `size` 切出去。
 
@@ -686,7 +686,7 @@ struct FreeBlock {
 
 这时“对齐”也不会自动消失。即便从 free list 里复用旧块，返回给调用者的起始地址仍然必须满足 `Layout::align()`。因此，一个真正可用的 free list allocator，往往不仅要比较 `size` 是否足够，还要检查这块在对齐后还能不能留下合法的剩余空间。把这一步想明白，就能看出为什么课件把 `bump -> alignment -> free list` 排成了一个连续梯度：它不是三个并列的知识点，而是一条逐步逼近真实 allocator 的实现路径。
 
-![Free List 复用空洞示意](images/no_std_article_png/08-free-list.png)
+![Free List 复用空洞示意](no_std_article_png/08-free-list.png)
 
 ---
 
@@ -733,7 +733,7 @@ struct FreeBlock {
 
 这时进程执行一次 `open("log.txt")`。内核扫描到最小空槽是 `3`，于是把一个 `Arc<dyn File>` 形式的文件对象放进 `fd_table[3]`，再把整数 `3` 返回给用户态。接下来，用户态执行 `write(3, ...)` 或 `read(3, ...)` 时，内核都会先查 `fd_table[3]`，再把请求转发给这个文件对象上的 `write/read` 方法。之后如果进程 `close(3)`，表项会被置回 `None`；下一次再 `open("config.txt")` 时，最小空槽仍然是 `3`，这个 fd 就会被复用。这样一来，`open -> 返回最小空槽 -> write/read -> close -> 槽位复用` 这整条链就闭合了。
 
-![`fd_table` 中句柄的 open、write、close 与槽位复用](images/no_std_article_png/11-fd-table-lifecycle.png)
+![`fd_table` 中句柄的 open、write、close 与槽位复用](no_std_article_png/11-fd-table-lifecycle.png)
 
 这里之所以常写成 `Arc<dyn File>` 而不是 `Box<dyn File>`，关键不在“语法更高级”，而在所有权模型。`Box` 表示唯一拥有者，适合“这个对象只会被一个地方独占”的场景。但句柄表里的文件对象经常会同时被多个位置引用：fd 表里有一份，某次 I/O 路径上可能临时 clone 一份；进一步的内核设计里，还可能出现 `dup`、`fork` 后父子进程共享打开文件等情况。`Arc` 允许这些引用并存，只有当最后一个引用离开时，对象才真正析构；这比“close 时立刻 drop 一个 `Box`”更贴近真实内核里“句柄关闭”和“对象生命结束”并不总是同一步的事实。
 
@@ -770,7 +770,7 @@ struct FdTable {
 
 **用户态通常不直接操作资源对象，而是通过“整数句柄 -> 内核对象”的间接映射来管理资源。**
 
-![Handle Table：数组索引即凭证](images/no_std_article_png/09-handle-table.png)
+![Handle Table：数组索引即凭证](no_std_article_png/09-handle-table.png)
 
 ---
 
@@ -828,7 +828,7 @@ struct FdTable {
 
 `no_std` 的一个重要价值，就是让这些隐藏成本重新可见。
 
-![`no_std` 最终训练出来的三类能力总结](images/no_std_article_png/14-no-std-summary.png)
+![`no_std` 最终训练出来的三类能力总结](no_std_article_png/14-no-std-summary.png)
 
 ---
 
